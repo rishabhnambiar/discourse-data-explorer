@@ -1,6 +1,7 @@
+import { ajax } from "discourse/lib/ajax";
 import RestModel from "discourse/models/rest";
 
-const Query = RestModel.extend({
+const Query = Discourse.Model.extend({
   dirty: false,
   params: {},
   results: null,
@@ -84,6 +85,16 @@ const Query = RestModel.extend({
 
 Query.reopenClass({
   updatePropertyNames: ["name", "description", "sql"]
+});
+
+Query.reopenClass({
+  findAll: function(filter) {
+    return ajax("/admin/plugins/explorer/queries.json", { data: { filter: filter } }).then(
+      function(queries) {
+        return queries.queries.map(p => Query.create(p));
+      }
+    );
+  }
 });
 
 export default Query;

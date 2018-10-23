@@ -1,7 +1,8 @@
-import showModal from "discourse/lib/show-modal";
-import Query from "discourse/plugins/discourse-data-explorer/discourse/models/query";
-import { popupAjaxError } from "discourse/lib/ajax-error";
 import { ajax } from "discourse/lib/ajax";
+import debounce from "discourse/lib/debounce";
+import showModal from "discourse/lib/show-modal";
+import { popupAjaxError } from "discourse/lib/ajax-error";
+import Query from "discourse/plugins/discourse-data-explorer/discourse/models/query";
 
 const NoQuery = Query.create({ name: "No queries", fake: true });
 
@@ -25,6 +26,13 @@ export default Ember.Controller.extend({
   showRecentQueries: true,
   sortBy: ["last_run_at:desc"],
   sortedQueries: Em.computed.sort("model", "sortBy"),
+
+  show: debounce(function() {
+    Query.findAll(this.get("filter")).then(result => {
+      this.set("model", result);
+      this.set("loading", false);
+    });
+  }, 250).observes("filter"),
 
   createDisabled: function() {
     return (this.get("newQueryName") || "").trim().length === 0;

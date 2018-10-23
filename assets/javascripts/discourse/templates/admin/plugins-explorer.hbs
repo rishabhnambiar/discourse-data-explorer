@@ -5,7 +5,10 @@
   {{else}}
     {{#unless selectedQueryId}}
       <div class="query-list">
-        {{combo-box valueAttribute="id" class="btn-left" value=selectedQueryId nameProperty="listName" none="explorer.menu_none" content=content castInteger="true" nameChanges="true"}}
+        {{!-- {{combo-box valueAttribute="id" class="btn-left" value=selectedQueryId nameProperty="listName" none="explorer.menu_none" content=content castInteger="true" nameChanges="true"}} --}}
+        <div class="permalink-search">
+          {{text-field value=filter class="filter" placeholderKey="admin.permalink.form.filter" autocorrect="off" autocapitalize="off"}}
+        </div>
         {{d-button action="showCreate" icon="plus" class="no-text btn-right"}}
         {{d-button action="importQuery" label="explorer.import.label" icon="upload btn-right"}}
       </div>

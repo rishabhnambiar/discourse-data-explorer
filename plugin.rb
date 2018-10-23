@@ -937,8 +937,9 @@ SQL
     end
 
     def index
-      # guardian.ensure_can_use_data_explorer!
+      # load queries from db
       queries = DataExplorer::Query.all
+      # load default queries
       Queries.default.each do |params|
         query = DataExplorer::Query.new
         query.id = params.second["id"]
@@ -946,11 +947,12 @@ SQL
         query.name = params.second["name"]
         query.description = params.second["description"]
         query.created_by = Discourse::SYSTEM_USER_ID.to_s
-
         # don't render this query if query with the same id already exists in pstore
         queries.push(query) unless DataExplorer.pstore_get("q:#{query.id}").present?
       end
 
+      filter = params[:filter]
+      queries = queries.select { |q| q.name =~ /#{filter}/ || q.description =~ /#{filter}/ } if filter.present?
       render_serialized queries, DataExplorer::QuerySerializer, root: 'queries'
     end
 
