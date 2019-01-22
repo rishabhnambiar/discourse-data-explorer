@@ -22,6 +22,8 @@ export default Ember.Controller.extend({
   asc: null,
   order: null,
   editing: false,
+  // allowMods: undefined,
+  allowMods: Em.computed.alias("selectedItem.allow_mods"),
   everEditing: false,
   showRecentQueries: true,
   sortBy: ["last_run_at:desc"],
@@ -95,6 +97,11 @@ export default Ember.Controller.extend({
 
   actions: {
     dummy() {},
+
+    watchFoo: function(){
+      console.log(this.get("selectedItem.allow_mods"));
+      this.save();
+    }.observes('selectedItem.allow_mods'),
 
     importQuery() {
       showModal("import-query");

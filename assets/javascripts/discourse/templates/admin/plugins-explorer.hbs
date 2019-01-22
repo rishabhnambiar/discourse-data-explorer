@@ -120,6 +120,8 @@
             {{/if}}
           {{else}}
             {{d-button action=(action "run") label="explorer.run" disabled=runDisabled class="btn-primary" type="submit"}}
+            {{!-- <label class="query-mods">{{input type="checkbox" checked=selectedItem.allowMods change=(action "save") name="allowMods"}} {{i18n "explorer.allow_mods"}}</label> --}}
+            <label class="query-mods">{{input type="checkbox" checked=allowMods change=(action "watchFoo") name="allowMods"}} {{i18n "explorer.allow_mods"}}</label>
           {{/if}}
           <label class="query-plan">{{input type="checkbox" checked=explain name="explain"}} {{i18n "explorer.explain_label"}}</label>
         </form>
