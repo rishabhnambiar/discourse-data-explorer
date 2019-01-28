@@ -590,6 +590,9 @@ SQL
       @name = 'Unnamed Query'
       @description = ''
       @sql = 'SELECT 1'
+      @created_at = ''
+      @created_by = ''
+      @last_run_at = ''
     end
 
     def slug
@@ -651,6 +654,7 @@ SQL
         hash[:id] = id
         from_hash hash
       else
+        Rails.logger.info DataExplorer.pstore_get("q:#{id}")
         unless hash = DataExplorer.pstore_get("q:#{id}")
           return DataExplorer::Query.new if opts[:ignore_deleted]
           raise Discourse::NotFound
@@ -1002,16 +1006,38 @@ SQL
       query = DataExplorer::Query.find(params[:id].to_i, ignore_deleted: true)
       hash = params.require(:query)
 
+      Rails.logger.info "POC REQUIRE"
+      Rails.logger.info params.require(:query)
+
+      # POINT OF TROUBLE
+      Rails.logger.info "POC hash"
+      Rails.logger.info hash
+      # {"name"=>"POSTS2", "description"=>"", "sql"=>"SELECT 1", "id"=>"9"}
+
       # Undeleting
       unless query.id
         if hash[:id]
+          Rails.logger.info "HAS ID"
+          Rails.logger.info hash
+          # THIS HASH doesnt have other 3 params
+
           query.id = hash[:id].to_i
+
+          query.created_at = hash[:created_at]
+          query.created_by = hash[:created_by]
+          query.last_run_at = hash[:last_run_at]
+
+          Rails.logger.info "HAS ID"
+          Rails.logger.info query.id
+          Rails.logger.info query.inspect
+          # #<DataExplorer::Query:0x000055c2c255b290 @name="Unnamed Query", @description="", @sql="SELECT 1", @id=26>
+          # 24
         else
           raise Discourse::NotFound
         end
       end
 
-      [:name, :sql, :description].each do |sym|
+      [:name, :sql, :description, :created_by, :created_at, :last_run_at].each do |sym|
         query.send("#{sym}=", hash[sym]) if hash[sym]
       end
 
